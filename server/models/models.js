@@ -4,25 +4,34 @@ const {DataTypes} = require('sequelize')
 const Teacher = sequelize.define('teacher', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     fio: {type: DataTypes.STRING},
-    personalAcc: {type: DataTypes.INTEGER},
     login: {type: DataTypes.STRING, unique: true},
-    password: {type: DataTypes.STRING}
+    password: {type: DataTypes.STRING},
+    capital: {type: DataTypes.INTEGER},
+    role: {type: DataTypes.STRING, defaultValue: 'TEACHER'}
 })
 
 const Student = sequelize.define('student', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     fio: {type: DataTypes.STRING},
     login: {type: DataTypes.STRING, unique: true},
-    password: {type: DataTypes.STRING}
-})
-
-const Specialists = sequelize.define('specialists', {
-    lessonPrice: {type: DataTypes.INTEGER}
+    password: {type: DataTypes.STRING},
+    capital: {type: DataTypes.INTEGER},
 })
 
 const Specialization = sequelize.define('specialization', {
-    specId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    specName: {type: DataTypes.STRING}
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    specialName: {type: DataTypes.INTEGER},
+    price: {type: DataTypes.INTEGER}
+})
+
+const Payments = sequelize.define('payments', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    amount: {type: DataTypes.INTEGER}
+})
+
+const TeachersAccount = sequelize.define('teacher_account', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    personalAccount: {type: DataTypes.INTEGER}
 })
 
 const TeacherContact = sequelize.define('teacher_contact',{
@@ -34,143 +43,145 @@ const StudentContact = sequelize.define('student_contact',{
 })
 
 const ContactTypes = sequelize.define('contact_types', {
-    contactId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     contactName: {type: DataTypes.STRING}
 })
 
-const StudentTrainingGoal = sequelize.define('student_training_goal',{
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
-})
-
-const LearningGoal = sequelize.define('learning_goal',{
-    learningGoalId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    learningGoalName: {type: DataTypes.STRING}
-})
-
-const StudentsAndTeachers = sequelize.define('students_wallet',{
+const StudentsAndTeachers = sequelize.define('students_and_teachers',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
 })
 
 const Timetable = sequelize.define('timetable',{
-    lessonId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false},
     dateTime: {type: DataTypes.DATE}
 })
 
-const LessonType = sequelize.define('lesson_type',{
-    lessonTypeId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    lessonTypeName: {type: DataTypes.STRING}
-})
-
-const TeachersWallet = sequelize.define('teachers_wallet',{
-    lessonId: {type: DataTypes.INTEGER, primaryKey: true},
-    dateTime: {type: DataTypes.DATE},
-    bid: {type: DataTypes.INTEGER}
-})
-
 const LessonStatus = sequelize.define('lesson_status',{
-    Id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     lessonStatusName: {type: DataTypes.STRING}
 })
+
+const LearningGoal = sequelize.define('learning_goal',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+})
+
+const LearningGoalTypes = sequelize.define('learning_goal_types',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    name: {type: DataTypes.STRING},
+})
+
+/////////////////////////////////////
+
 
 const EduMaterials = sequelize.define('edu_materials',{
     Id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     eduMaterialURL: {type: DataTypes.STRING}
 })
 
-const Exercise = sequelize.define('exercise',{
-    exerciseId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    level: {type: DataTypes.INTEGER},
+const Course = sequelize.define('course',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     theme: {type: DataTypes.INTEGER},
-    exerciseURL: {type: DataTypes.STRING}
 })
 
-const LessonThemes = sequelize.define('lesson_themes',{
-    Id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    themeName: {type: DataTypes.STRING}
+const TestingTask = sequelize.define('testing_task',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    level: {type: DataTypes.STRING}
 })
 
-const LessonLevels = sequelize.define('lesson_levels',{
-    Id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    levelName: {type: DataTypes.STRING}
+const TestingType = sequelize.define('testing_type',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    name: {type: DataTypes.STRING}
 })
 
-// Teachers
-
-Teacher.belongsToMany(Specialization, {through: Specialists})
-Specialization.belongsToMany(Teacher, {through: Specialists})
-
-Teacher.belongsToMany(ContactTypes, {through: TeacherContact})
-ContactTypes.belongsToMany(Teacher, {through: TeacherContact})
-
-Teacher.belongsToMany(Specialization, {through: StudentsAndTeachers})
-Specialization.belongsToMany(Teacher, {through: StudentsAndTeachers})
-
-Teacher.belongsToMany(Student, {through: StudentsAndTeachers})
-Student.belongsToMany(Teacher, {through: StudentsAndTeachers})
-
-Teacher.hasMany(Timetable)
-Timetable.belongsTo(Teacher)
+const Test = sequelize.define('test',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    text: {type: DataTypes.STRING},
+    value: {type: DataTypes.STRING},
+    correctAnswer: {type: DataTypes.STRING}
+})
 
 // Students
 
-Student.belongsToMany(Teacher, {through: StudentsAndTeachers})
-Teacher.belongsToMany(Student, {through: StudentsAndTeachers})
+Student.hasMany(StudentContact)
+StudentContact.belongsTo(Student)
 
-Student.belongsToMany(Specialization, {through: StudentsAndTeachers})
-Specialization.belongsToMany(Student, {through: StudentsAndTeachers})
+Student.hasMany(LearningGoal)
+LearningGoal.belongsTo(Student)
 
-Student.belongsToMany(ContactTypes, {through: StudentContact})
-ContactTypes.belongsToMany(Student, {through: StudentContact})
+Student.hasMany(StudentsAndTeachers)
+StudentsAndTeachers.belongsTo(Student)
 
-Student.belongsToMany(LearningGoal, {through: StudentTrainingGoal})
-LearningGoal.belongsToMany(Student, {through: StudentTrainingGoal})
+// LearningGoal
 
-Student.hasMany(Timetable)
-Timetable.belongsTo(Student)
+LearningGoal.hasMany(LearningGoalTypes)
+LearningGoalTypes.belongsTo(LearningGoal)
+
+// ContactTypes
+
+ContactTypes.hasMany(StudentContact)
+StudentContact.belongsTo(ContactTypes)
+
+ContactTypes.hasMany(TeacherContact)
+TeacherContact.belongsTo(ContactTypes)
+
+// StudentsAndTeachers
+
+StudentsAndTeachers.hasMany(Timetable)
+Timetable.belongsTo(StudentsAndTeachers)
 
 // Timetable
-
-TeachersWallet.belongsToMany(Teacher, {through: Timetable})
-Teacher.belongsToMany(TeachersWallet, {through: Timetable})
-
-Timetable.hasMany(LessonType)
-LessonType.belongsTo(Timetable)
 
 Timetable.hasMany(LessonStatus)
 LessonStatus.belongsTo(Timetable)
 
-Timetable.hasMany(EduMaterials)
-EduMaterials.belongsTo(Timetable)
+// Teachers
 
-Timetable.hasMany(Exercise)
-Exercise.belongsTo(Timetable)
+Teacher.hasOne(TeachersAccount)
+TeachersAccount.belongsTo(Teacher)
 
-// Exercise
+Teacher.hasMany(Payments)
+Payments.belongsTo(Teacher)
 
-Exercise.hasMany(LessonThemes)
-LessonThemes.belongsTo(Exercise)
+Teacher.hasMany(Specialization)
+Specialization.belongsTo(Teacher)
 
-Exercise.hasMany(LessonLevels)
-LessonLevels.belongsTo(Exercise)
+// Specialization
+
+Specialization.hasMany(StudentsAndTeachers)
+StudentsAndTeachers.belongsTo(Specialization)
+
+// Course
+
+Course.hasMany(TestingTask)
+TestingTask.belongsTo(Course)
+
+// TestingTask
+
+TestingTask.hasOne(Test)
+Test.belongsTo(TestingTask)
+
+// TestingType
+
+TestingType.hasMany(TestingTask)
+TestingTask.belongsTo(TestingType)
 
 
 module.exports = {
     Teacher,
     Student,
-    Specialists,
     Specialization,
+    Payments,
+    TeachersAccount,
     TeacherContact,
     StudentContact,
     ContactTypes,
-    StudentTrainingGoal,
-    LearningGoal,
     StudentsAndTeachers,
     Timetable,
-    LessonType,
-    TeachersWallet,
     LessonStatus,
+    LearningGoal,
+    LearningGoalTypes,
     EduMaterials,
-    Exercise,
-    LessonThemes,
-    LessonLevels
+    Course,
+    TestingTask,
+    TestingType,
+    Test
 }
