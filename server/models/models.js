@@ -6,6 +6,8 @@ const Teacher = sequelize.define('teacher', {
     fio: {type: DataTypes.STRING},
     login: {type: DataTypes.STRING, unique: true},
     password: {type: DataTypes.STRING},
+    education: {type: DataTypes.STRING},
+    about: {type: DataTypes.TEXT},
     capital: {type: DataTypes.INTEGER},
     role: {type: DataTypes.STRING, defaultValue: 'TEACHER'}
 })
