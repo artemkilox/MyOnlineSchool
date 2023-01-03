@@ -6,10 +6,11 @@ const Teacher = sequelize.define('teacher', {
     fio: {type: DataTypes.STRING},
     login: {type: DataTypes.STRING, unique: true},
     password: {type: DataTypes.STRING},
-    education: {type: DataTypes.STRING},
-    about: {type: DataTypes.TEXT},
-    capital: {type: DataTypes.INTEGER},
-    role: {type: DataTypes.STRING, defaultValue: 'TEACHER'}
+    paymentAccount:{type: DataTypes.INTEGER},
+    balance: {type: DataTypes.FLOAT},
+    info: {type: DataTypes.TEXT},
+    avatar: {type: DataTypes.STRING},
+    achievements: {type: DataTypes.STRING}
 })
 
 const Student = sequelize.define('student', {
@@ -17,30 +18,29 @@ const Student = sequelize.define('student', {
     fio: {type: DataTypes.STRING},
     login: {type: DataTypes.STRING, unique: true},
     password: {type: DataTypes.STRING},
-    capital: {type: DataTypes.INTEGER},
+    age: {type: DataTypes.DATE},
+    class: {type: DataTypes.INTEGER},
+    balance: {type: DataTypes.FLOAT},
+    info: {type: DataTypes.TEXT}
 })
 
 const Specialization = sequelize.define('specialization', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    specialName: {type: DataTypes.INTEGER},
-    price: {type: DataTypes.INTEGER}
+    specialName: {type: DataTypes.STRING},
+    price: {type: DataTypes.FLOAT}
 })
 
 const Payments = sequelize.define('payments', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    amount: {type: DataTypes.INTEGER}
+    amount: {type: DataTypes.FLOAT}
 })
 
-const TeachersAccount = sequelize.define('teacher_account', {
+const Adding = sequelize.define('adding', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    personalAccount: {type: DataTypes.INTEGER}
+    amount: {type: DataTypes.FLOAT}
 })
 
-const TeacherContact = sequelize.define('teacher_contact',{
-    contactData: {type: DataTypes.STRING}
-})
-
-const StudentContact = sequelize.define('student_contact',{
+const UserContact = sequelize.define('user_contact',{
     contactData: {type: DataTypes.STRING}
 })
 
@@ -49,11 +49,12 @@ const ContactTypes = sequelize.define('contact_types', {
     contactName: {type: DataTypes.STRING}
 })
 
-const StudentsAndTeachers = sequelize.define('students_and_teachers',{
+const Courses = sequelize.define('courses',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
 })
 
 const Timetable = sequelize.define('timetable',{
+    classId: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     dateTime: {type: DataTypes.DATE}
 })
 
@@ -71,22 +72,22 @@ const LearningGoalTypes = sequelize.define('learning_goal_types',{
     name: {type: DataTypes.STRING},
 })
 
-/////////////////////////////////////
-
-
-const EduMaterials = sequelize.define('edu_materials',{
-    Id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    eduMaterialURL: {type: DataTypes.STRING}
+const Subjects = sequelize.define('subjects', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    name: {type: DataTypes.STRING},
 })
 
-const Course = sequelize.define('course',{
+////////////////////////////////////////////////
+
+const TestCourse = sequelize.define('test_course',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     theme: {type: DataTypes.INTEGER},
 })
 
 const TestingTask = sequelize.define('testing_task',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    level: {type: DataTypes.STRING}
+    level: {type: DataTypes.STRING},
+    eduMaterialURL: {type: DataTypes.STRING}
 })
 
 const TestingType = sequelize.define('testing_type',{
@@ -96,75 +97,145 @@ const TestingType = sequelize.define('testing_type',{
 
 const Test = sequelize.define('test',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    attach: {type: DataTypes.STRING},
     text: {type: DataTypes.STRING},
     value: {type: DataTypes.STRING},
     correctAnswer: {type: DataTypes.STRING}
 })
 
+const Results = sequelize.define('results',{
+    result: {type: DataTypes.STRING},
+})
+///////////////////////////////////////////////////////
+
+const Manager = sequelize.define('manager',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    fio: {type: DataTypes.STRING},
+    phone: {type: DataTypes.STRING},
+})
+
+const Appeal = sequelize.define('appeal',{
+    name: {type: DataTypes.STRING},
+})
+
+const AppealStatus = sequelize.define('appeal_status',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    name: {type: DataTypes.STRING},
+})
+
+const Chat = sequelize.define('chat',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+})
+
+const Message = sequelize.define('message',{
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    value: {type: DataTypes.TEXT},
+    dateTime: {type: DataTypes.DATE},
+})
+
 // Students
 
-Student.hasMany(StudentContact)
-StudentContact.belongsTo(Student)
+Student.hasMany(UserContact)
+UserContact.belongsTo(Student)
+
+Student.hasMany(Adding)
+Adding.belongsTo(Student)
 
 Student.hasMany(LearningGoal)
 LearningGoal.belongsTo(Student)
 
-Student.hasMany(StudentsAndTeachers)
-StudentsAndTeachers.belongsTo(Student)
+Student.hasMany(Courses)
+Courses.belongsTo(Student)
+
+Student.hasMany(Message)
+Message.belongsTo(Student)
+
+Student.hasMany(Results)
+Results.belongsTo(Student)
 
 // LearningGoal
 
-LearningGoal.hasMany(LearningGoalTypes)
-LearningGoalTypes.belongsTo(LearningGoal)
+LearningGoalTypes.hasMany(LearningGoal)
+LearningGoal.belongsTo(LearningGoalTypes)
+
+Subjects.hasMany(LearningGoal)
+LearningGoal.belongsTo(Subjects)
 
 // ContactTypes
 
-ContactTypes.hasMany(StudentContact)
-StudentContact.belongsTo(ContactTypes)
-
-ContactTypes.hasMany(TeacherContact)
-TeacherContact.belongsTo(ContactTypes)
-
-// StudentsAndTeachers
-
-StudentsAndTeachers.hasMany(Timetable)
-Timetable.belongsTo(StudentsAndTeachers)
+ContactTypes.hasMany(UserContact)
+UserContact.belongsTo(ContactTypes)
 
 // Timetable
 
-Timetable.hasMany(LessonStatus)
-LessonStatus.belongsTo(Timetable)
+Courses.hasMany(Timetable)
+Timetable.belongsTo(Courses)
+
+LessonStatus.hasMany(Timetable)
+Timetable.belongsTo(LessonStatus)
 
 // Teachers
-
-Teacher.hasOne(TeachersAccount)
-TeachersAccount.belongsTo(Teacher)
 
 Teacher.hasMany(Payments)
 Payments.belongsTo(Teacher)
 
+Teacher.hasMany(Message)
+Message.belongsTo(Teacher)
+
 Teacher.hasMany(Specialization)
 Specialization.belongsTo(Teacher)
 
+Teacher.hasMany(UserContact)
+UserContact.belongsTo(Teacher)
+
+Teacher.hasMany(TestingTask)
+TestingTask.belongsTo(Teacher)
+
 // Specialization
 
-Specialization.hasMany(StudentsAndTeachers)
-StudentsAndTeachers.belongsTo(Specialization)
+Specialization.hasMany(Courses)
+Courses.belongsTo(Specialization)
 
-// Course
+// TestCourse
 
-Course.hasMany(TestingTask)
-TestingTask.belongsTo(Course)
+TestCourse.hasMany(TestingTask)
+TestingTask.belongsTo(TestCourse)
 
 // TestingTask
 
-TestingTask.hasOne(Test)
-Test.belongsTo(TestingTask)
+TestingTask.hasMany(Results)
+Results.belongsTo(TestingTask)
 
 // TestingType
 
 TestingType.hasMany(TestingTask)
 TestingTask.belongsTo(TestingType)
+
+// Test
+
+Test.hasMany(TestingTask)
+TestingTask.belongsTo(Test)
+
+// Chat
+
+Chat.hasMany(Message)
+Message.belongsTo(Chat)
+
+// Manager
+
+Manager.hasMany(Message)
+Message.belongsTo(Manager)
+
+Manager.hasMany(Appeal)
+Appeal.belongsTo(Manager)
+
+// Appeal
+
+AppealStatus.hasMany(Appeal)
+Appeal.belongsTo(AppealStatus)
+
+Appeal.hasOne(Chat)
+Chat.belongsTo(Appeal)
 
 
 module.exports = {
@@ -172,18 +243,23 @@ module.exports = {
     Student,
     Specialization,
     Payments,
-    TeachersAccount,
-    TeacherContact,
-    StudentContact,
+    Adding,
+    UserContact,
     ContactTypes,
-    StudentsAndTeachers,
+    Courses,
     Timetable,
     LessonStatus,
     LearningGoal,
     LearningGoalTypes,
-    EduMaterials,
-    Course,
+    Subjects,
+    TestCourse,
     TestingTask,
     TestingType,
-    Test
+    Test,
+    Results,
+    Manager,
+    Appeal,
+    AppealStatus,
+    Chat,
+    Message
 }
